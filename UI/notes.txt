@@ -1,0 +1,32 @@
+import gradio as gr
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(name=f'Gretio.App.{__name__}')
+
+# run as gradio name.py for hot reload
+
+def greet(name, years, happy='',image=''):
+    logger.debug(name)
+    return f'Hey {name}! You are {years} years old'
+
+demo = gr.Interface(
+    title= 'Example',
+    description= 'First gradio example',
+    article='This is the article accepts md, html as tittle and description',
+    fn = greet, # wrap the UI in this function
+    inputs=[gr.Textbox(placeholder='Name...',label='Name'),gr.Slider(value=2,minimum=1,maximum=10,step=1,label='Age')], # match the components with the arguments in main function
+    outputs=[gr.Textbox(label='Greeting',lines=3,info='Greeting from function')], # match the return of fuction
+    examples=[
+        ['Cris',2],
+        ['David',3]
+    ],
+    additional_inputs=[
+        gr.Slider(0,10),
+        gr.Image()
+    ]
+)
+
+#demo.launch()
+# demo.launch(share=True) To get public URL
+### Sort by region, type, date
