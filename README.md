@@ -13,7 +13,7 @@ Lite platform to filter call reports from RFPs bids and LLM supported analysis
 
 ## Setup
 
-1. Get the necessary dependencies (use python venv):
+1. Get the necessary dependencies (use python venv / toml):
     - gradio
     - oci
     - oracledb

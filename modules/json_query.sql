@@ -18,7 +18,7 @@ SELECT t.id,t.metadata.file_name FROM WL_Calls t WHERE json_query(metadata, '$?(
 --SELECT t.metadata.products[0] FROM WL_Calls t;
 --SELECT t.metadata.file_name FROM WL_Calls t WHERE t.metadata.regions.region = 'US';
 
-        -- Search for a dictionary
-        --query = f"SELECT json_query(metadata, '$.{request_info}[0].string()') FROM WL_Calls"
-        -- Search for a value
-        --query = f"SELECT json_query(metadata, '$.{request_info}.string()') FROM WL_Calls"
+-- Search for a dictionary
+--query = f"SELECT json_query(metadata, '$.{request_info}[0].string()') FROM WL_Calls"
+-- Search for a value
+--query = f"SELECT json_query(metadata, '$.{request_info}.string()') FROM WL_Calls"

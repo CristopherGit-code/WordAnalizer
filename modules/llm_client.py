@@ -7,11 +7,6 @@ import ast
 logger = logging.getLogger(name=f'File.{__name__}----------->')
 
 # General variables --------------------------
-MAX_TOKENS = 600
-TEMPERATURE = 1
-FREQ_PENALTY = 0
-TOP_P = 0.75
-TOP_K = 0
 PREAMBLE = 'Answer in maximum, 200 words'
 MESSAGE = ''
 
@@ -39,11 +34,11 @@ class Client:
         self.chat_request = models.CohereChatRequest()
         self.chat_request.preamble_override = PREAMBLE # user
         self.chat_request.message = MESSAGE #user
-        self.chat_request.max_tokens = MAX_TOKENS
-        self.chat_request.temperature = TEMPERATURE
-        self.chat_request.frequency_penalty = FREQ_PENALTY
-        self.chat_request.top_p = TOP_P
-        self.chat_request.top_k = TOP_K
+        self.chat_request.max_tokens = self.settings.oci_client.max_tokens
+        self.chat_request.temperature = self.settings.oci_client.temperature
+        self.chat_request.frequency_penalty = self.settings.oci_client.freq_penalty
+        self.chat_request.top_p = self.settings.oci_client.top_p
+        self.chat_request.top_k = self.settings.oci_client.top_k
         self.chat_request.chat_history = self.message_history #user    
         
     def get_chat_details(self):
@@ -91,8 +86,7 @@ class Client:
         except Exception as e:
             r_dict = [2010,None,None,None]
         return r_dict
-
-    # TODO: Set each user to particular history, missing
+    
     def reset_chat(self):
         self.message_history = []
 

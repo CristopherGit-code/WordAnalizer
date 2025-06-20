@@ -10,28 +10,32 @@ UI_manager = UI()
 with gr.Blocks() as demo:
     gr.Markdown("# *WL Analysis*")
     with gr.Tab("Report filter"):
-        with gr.Row():
+        with gr.Row(equal_height=True):
             unique_years,unique_type,unique_region = UI_manager.available_filters()
             year = gr.Dropdown(choices=unique_years, interactive=True, label="Year")
             type = gr.Dropdown(choices=unique_type, interactive=True, label="Type")
             region = gr.Dropdown(choices=unique_region, interactive=True, label="Region")
             customer = gr.Text(label="Customer")
             product = gr.Text(label="Products")
-
+        
+        with gr.Row(equal_height=True):
             filter_bttn = gr.Button("Filter")
-        with gr.Row():
+        
+        with gr.Row(equal_height=True):
             text_search = gr.Text(label="Search by query:", placeholder="Give me documents in America...")    
             with gr.Column():
                 query_btn = gr.Button("Search")
                 message = gr.Text(container=False,interactive=False)
-        with gr.Row():
+        
+        with gr.Row(equal_height=True):
             file_list = gr.List(label="Documents available")
             
-        with gr.Row():
+        with gr.Row(equal_height=True):
             new_files = gr.File(file_count='multiple')
-        with gr.Row():
+        
+        with gr.Row(equal_height=True):
             new_file_bttn = gr.Button("Upload files")
-            ok_message = gr.Label()
+            ok_message = gr.Text()
 
     with gr.Tab("Chat"):
         gr.ChatInterface(

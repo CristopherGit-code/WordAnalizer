@@ -30,7 +30,6 @@ class UI:
     
     def manage_filter(self,year,type,region,customer,product):
         self.client.reset_chat() # Reset to explain the mew filters
-        # TODO: fix no_bid problem
         responses = self._get_db_response(['t.metadata.file_name','t.content'],year,type,region,customer,product)
         if not responses:
             self.merged_data = 'No data, retry'
