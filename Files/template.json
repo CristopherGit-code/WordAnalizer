@@ -1,0 +1,20 @@
+{
+    "file_name": "name of the file",
+    "report_date": "yyyy-mm-dd. If mm or dd missing default June 1st. FYnn, nn is the year",
+    "type": "loss/win/no_bid",
+    "regions": [
+        {"region":"Two letter abreviation for country"},
+        {"region":"Name of the continent"},
+        {"region":"Other locations applicable"}
+    ],
+    "customer": "Name of the customer in the bid",
+    "products": [
+        {"product":"Products Oracle / Opower is offering"},
+        {"product":"Applicable product 1"},
+        {"product":"Applicable product 2"}
+    ],
+    "competitors": [
+        {"competitor":"competitors mentioned"},
+        {"competitor":"external companies not Oracle"}
+    ]
+}

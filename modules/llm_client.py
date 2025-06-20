@@ -16,8 +16,8 @@ PREAMBLE = 'Answer in maximum, 200 words'
 MESSAGE = ''
 
 class Client:
-    def __init__(self):
-        self.settings = Settings("App.yaml")
+    def __init__(self, settings: Settings):
+        self.settings = settings
         self.config = oci.config.from_file(
             self.settings.oci_client.config_path, 
             self.settings.oci_client.configProfile)
@@ -68,7 +68,7 @@ class Client:
             generated_response = chat_response.data.chat_response.text
         except oci.exceptions.ServiceError as s:
             logger.debug(s)
-            generated_response = 'Error in fetching the message'
+            generated_response = f'Error in fetching the message: {s.message}'
         except Exception as e:
             logger.debug(e)
             generated_response = 'General internal error'

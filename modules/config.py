@@ -23,7 +23,7 @@ class Settings:
         self._initialized = True
 
     # Exit if the file is not loaded
-    def _load_config(self, config_path: str = "App.yaml") -> Dict[str, Any]:
+    def _load_config(self, config_path: str = "wl_analysis.yaml") -> Dict[str, Any]:
         #Load from yaml file with env variables
         try:
             return Box(dict(EnvYAML(config_path)))

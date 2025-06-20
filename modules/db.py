@@ -1,6 +1,4 @@
 import oracledb,json,logging
-from datetime import datetime
-from pathlib import Path
 from .config import Settings
 
 logger = logging.getLogger(name='DB details')
@@ -100,7 +98,7 @@ class DataBase:
             logger.info('Table created with name: WL_Calls')
 
 def main():
-    settings = Settings('App.yaml')
+    settings = Settings('wl_analysis.yaml')
     db = DataBase(settings)
     db.init()
 
