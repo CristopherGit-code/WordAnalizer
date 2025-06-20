@@ -3,14 +3,17 @@ name = "wl-calls-analysis"
 version = "1.0.0"
 description = "Platform to filter and read word files"
 readme = "README.md"
+authors = [
+    {name = "Name", email = "email@example.com"}
+]
 requires-python = ">=3.11"
 dependencies = [
-    "gradio>=5.34.0"
-    "oci>=2.154.2"
-    "oracledb>=3.1.1"
-    "pathlib"
-    "envyaml>=1.10.211231"
-    "python-box"
-    "python-dotenv"
-    "markitdown[all]>=0.1.2"
+    "gradio>=5.34.0",
+    "oci>=2.154.2",
+    "oracledb>=3.1.1",
+    "pathlib",
+    "envyaml>=1.10.211231",
+    "python-box",
+    "python-dotenv",
+    "markitdown[all]>=0.1.2",
 ] 
