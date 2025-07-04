@@ -28,7 +28,7 @@ class DataBase:
         logger.info('Connected to DB')
         return self._pool.acquire()
     
-    def build_query(self,cols=['t.id','t.metadata.file_name'],year=2010,type='',region='',customer='',product='') -> str:
+    def _build_query(self,cols=['t.id','t.metadata.file_name'],year=2010,type='',region='',customer='',product='') -> str:
         search = ','.join(cols)
         query = rf"""SELECT {search} FROM WL_Calls t WHERE json_query(metadata, '$.report_date.date()?(@ > "{str(year)}-01-01T00:00")') IS NOT NULL"""
         if type:
@@ -63,7 +63,7 @@ class DataBase:
             except Exception as e:
                 logger.debug(e)
 
-    def sort_files(self,query:str):
+    def _sort_files(self,query:str) -> list:
         db_responses = []
         with self._get_connection() as connection:
             cursor = connection.cursor()
@@ -71,8 +71,22 @@ class DataBase:
             for row in rows:
                 db_responses.append(row)
         return db_responses
+    
+    def get_db_response(
+            self,
+            name_list,
+            year:int=2010,
+            type:str=None,
+            region:str=None,
+            customer:str=None,
+            product:str=None
+        ):
+        db_query = self._build_query(name_list,year,type,region,customer,product)
+        db_response = self._sort_files(db_query)
+        lists = [list(group) for group in zip(*db_response)]
+        return lists
 
-    def init(self):
+    def _init(self):
         with self._get_connection() as connection:
             cursor = connection.cursor()
 
@@ -98,9 +112,12 @@ class DataBase:
             logger.info('Table created with name: WL_Calls')
 
 def main():
-    settings = Settings('wl_analysis.yaml')
+    settings = Settings('/home/asaagarw/projects/wl_analysis/wl_analysis.yaml')
     db = DataBase(settings)
-    db.init()
+    responses = db.get_db_response(
+            ['t.metadata.report_date','t.metadata.type','t.metadata.regions[0].region']
+        )
+    print(responses)
 
 if __name__=='__main__':
     main()

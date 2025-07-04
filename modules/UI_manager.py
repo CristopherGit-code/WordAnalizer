@@ -2,61 +2,72 @@ from modules.config import Settings
 from modules.db import DataBase
 from modules.file_handler import File_handlder
 from modules.llm_client import Client
-import logging
+import logging,uuid
 
 logger = logging.getLogger(name=f'File.{__name__}.UI')
 
 class UI:
     def __init__(self):
         self.merged_data = ''
+        self.merged_files_db = {}
+
         self.settings = Settings("wl_analysis.yaml")
         self.db = DataBase(self.settings)
         self.client = Client(self.settings)
         self.file_manager = File_handlder()
 
-    def _get_db_response(
-            self,
-            name_list,
-            year=2010,
-            type=None,
-            region=None,
-            customer=None,
-            product=None
-        ):
-        db_query = self.db.build_query(name_list,year,type,region,customer,product)
-        db_response = self.db.sort_files(db_query)
-        lists = [list(group) for group in zip(*db_response)]
-        return lists
+    def load_user_session(self,session):
+        user_id = uuid.uuid4()
+        session = user_id    
+        return session
     
-    def manage_filter(self,year,type,region,customer,product):
-        self.client.reset_chat() # Reset to explain the mew filters
-        responses = self._get_db_response(['t.metadata.file_name','t.content'],year,type,region,customer,product)
+    def _get_user_filter_files(self,user_id):
+        try:
+            return self.merged_files_db[user_id]
+        except KeyError as k:
+            return ''
+
+    def _manage_user_filter_files(self,user_id,content):
+        user_files = self._get_user_filter_files(user_id)
+        if not user_files:
+            self.merged_files_db[user_id] = ''
+        self.merged_files_db[user_id] = content
+    
+    def _manage_filter(self,year,type,region,customer,product, user_id):
+        responses = self.db.get_db_response(['t.metadata.file_name','t.content'],year,type,region,customer,product)
         if not responses:
             self.merged_data = 'No data, retry'
             return ['No files found with that filter']
         else:
             self.merged_data = self.file_manager.merge_md(responses[1])
+            self._manage_user_filter_files(user_id, self.merged_data)
             return responses[0]
         
-    def get_client_analysis(self,prompt,message_history,system_instructions=''):
-        query = prompt + f' given the data in {self.merged_data}'
-        logger.debug(query)
-        return self.client.provide_analysis(query, system_instructions)
+    def get_client_analysis(self,prompt,message_history,system_instructions, user_id):
+        query = prompt + f' given the data in {self._get_user_filter_files(user_id)}'
+        response = self.client.provide_analysis(query, system_instructions, user_id)
+        return response
 
-    def get_client_filter(self,prompt:str):
+    def get_client_filter(self,year,type,region,customer,product, prompt:str, user_id, file_list):
+        if not prompt:
+            lists = self._manage_filter(year,type,region,customer,product, user_id)
+            message = f'Filtered manually by: {[year,type,region,customer,product]}'
+            
+            return lists, message
         r_dict = self.client.filter_files(prompt)
-        year = r_dict[0]
-        type = r_dict[1]
-        region = r_dict[2]
-        customer = r_dict[3]
-        product = r_dict[4]
-        lists = self.manage_filter(year,type,region,customer,product)
+        #logger.debug(r_dict)
+        year_p = r_dict[0]
+        type_p = r_dict[1]
+        region_p = r_dict[2]
+        customer_p = r_dict[3]
+        product_p = r_dict[4]
+        lists = self._manage_filter(year_p,type_p,region_p,customer_p,product_p, user_id)
         message = f'Filter applied to prompt: {r_dict}'
-
+        
         return lists,message
     
     def available_filters(self):
-        responses = self._get_db_response(
+        responses = self.db.get_db_response(
             ['t.metadata.report_date','t.metadata.type','t.metadata.regions[0].region']
         )
         years = [int(date[:4]) for date in responses[0]]
@@ -73,3 +84,6 @@ class UI:
     
     def manage_files(self,new_files):
         return 'Pass'
+    
+    def get_chat_placeholder(self):
+        return self.settings.chat_placeholder

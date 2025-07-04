@@ -1,6 +1,6 @@
 # Win-Loss call analysis
 
-### last update: 2025-06-20
+### last update: 2025-07-04
 
 Lite platform to filter call reports from RFPs bids and LLM supported analysis
 

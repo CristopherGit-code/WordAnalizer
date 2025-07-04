@@ -9,7 +9,7 @@ class File_handlder():
         self.md = MarkItDown()
         self.source_folder = Path(r'C:\Users\Cristopher Hdz\Desktop\Test\WordAnalizer\Files\Call reports')
 
-    def parse_file(self, file):
+    def parse_file(self, file) -> str:
         result = self.md.convert(file)
         return result.text_content
     
