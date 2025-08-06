@@ -37,6 +37,26 @@ database:
   DB_password: ${DB_PASSWORD}
   dsn: ${DB_DSN}
   walletPass: ${WALLET_PASSWORD}
+welcome_instructions: >
+  <div align="left">
+      <h1> Quick Start </h1>
+  </div>
+  <h2>First filter the desired files:</h2>
+  <ol> <b>Search by query:</b>
+      <li>Give details in the box about the desired documents.</li>
+      <li>For products or customer, include the specification, for example: product PG&E.</li>
+      <li>Press 'Enter' to send the prompt.</li>
+  </ol>
+  <br>
+  <ol> <b>Manual filter:</b>
+      <li>Use the dropdowns to look for files.</li>
+      <li>To look for products, write and press 'Enter' to search.</li>
+  </ol>
+  <h2>Then go to chat window:</h2>
+  <ol>
+      <li>Messages will be answered based on the selected documents.</li>
+      <li>To change the scope, back to filter window and filter again.</li>
+  </ol>
 chat_placeholder: >
   <div align="center">
       <h1> Analysis chat </h1>

@@ -38,9 +38,10 @@ class DataBase:
         if region:
             query = query + rf""" AND json_query(metadata, '$?(@.regions.region == "{str(region)}")') IS NOT NULL"""
         if customer:
-            query = query + rf""" AND json_query(metadata, '$?(@.customer == "{str(customer)}")') IS NOT NULL"""
+            query = query + rf""" AND json_query(metadata, '$?(@.customer starts with ("{str(customer[0])}"))') IS NOT NULL"""
         if product:
             query = query + rf""" AND json_query(metadata, '$?(@.products.product starts with ("{str(product[0])}"))') IS NOT NULL"""
+        logger.debug(query)
         return query
     
     def collect_data(self,name,data,content):

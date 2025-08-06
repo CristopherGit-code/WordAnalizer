@@ -4,6 +4,7 @@ from modules.file_handler import File_handlder
 from modules.llm_client import Client
 import logging,uuid
 import gradio as gr
+from modules.llm_ai_client import SearchAgent
 
 logger = logging.getLogger(name=f'File.{__name__}.UI')
 
@@ -15,6 +16,7 @@ class UI:
         self.settings = Settings("wl_analysis.yaml")
         self.db = DataBase(self.settings)
         self.client = Client(self.settings)
+        self.openai_client = SearchAgent()
         self.file_manager = File_handlder()
 
     def load_user_session(self,session):
@@ -48,21 +50,27 @@ class UI:
         query = prompt + f' given the data in {self._get_user_filter_files(user_id)}'
         response = self.client.provide_analysis(query, system_instructions, user_id)
         return response
+    
+    def get_client_manual_filter(self,year,type,region,customer,product, prompt:str, user_id, file_list):
+        if year == "All":
+            year = None
+        else:
+            year = int(year)
+        lists = self._manage_filter(year,type,region,customer,product, user_id)
+        
+        return lists
 
-    def get_client_filter(self,year,type,region,customer,product, prompt:str, user_id, file_list):
-        if not prompt:
-            if year == "All":
-                year = None
-            else:
-                year = int(year)
-            lists = self._manage_filter(year,type,region,customer,product, user_id)
-            
-            return lists
-        r_dict = self.client.filter_files(prompt)
-        #logger.debug(r_dict)
+    def get_client_filter(self,year,type,region,customer,product, prompt:str, user_id, file_list):        
+        r_dict =self.openai_client.build_dictionary(prompt)
         year_p = r_dict[0]
+        if year_p == "All":
+            year_p = None
+        else:
+            year_p = int(year_p)
         type_p = r_dict[1]
         region_p = r_dict[2]
+        region_p = region_p.upper()
+
         customer_p = r_dict[3]
         product_p = r_dict[4]
         lists = self._manage_filter(year_p,type_p,region_p,customer_p,product_p, user_id)
@@ -96,3 +104,6 @@ class UI:
     
     def get_chat_placeholder(self):
         return self.settings.chat_placeholder
+    
+    def get_welcome_placeholder(self):
+        return self.settings.welcome_instructions
