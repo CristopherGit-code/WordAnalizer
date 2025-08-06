@@ -3,6 +3,7 @@ from modules.db import DataBase
 from modules.file_handler import File_handlder
 from modules.llm_client import Client
 import logging,uuid
+import gradio as gr
 
 logger = logging.getLogger(name=f'File.{__name__}.UI')
 
@@ -50,10 +51,13 @@ class UI:
 
     def get_client_filter(self,year,type,region,customer,product, prompt:str, user_id, file_list):
         if not prompt:
+            if year == "All":
+                year = None
+            else:
+                year = int(year)
             lists = self._manage_filter(year,type,region,customer,product, user_id)
-            message = f'Filtered manually by: {[year,type,region,customer,product]}'
             
-            return lists, message
+            return lists
         r_dict = self.client.filter_files(prompt)
         #logger.debug(r_dict)
         year_p = r_dict[0]
@@ -62,17 +66,16 @@ class UI:
         customer_p = r_dict[3]
         product_p = r_dict[4]
         lists = self._manage_filter(year_p,type_p,region_p,customer_p,product_p, user_id)
-        message = f'Filter applied to prompt: {r_dict}'
         
-        return lists,message
+        return lists
     
     def available_filters(self):
         responses = self.db.get_db_response(
-            ['t.metadata.report_date','t.metadata.type','t.metadata.regions[0].region']
+            ['t.metadata.report_date','t.metadata.type','t.metadata.regions[0].region','t.metadata.customer']
         )
-        years = [int(date[:4]) for date in responses[0]]
-        years.insert(0,2010)
+        years = [str(date[:4]) for date in responses[0]]
         unique_years = sorted(set(years))
+        unique_years.insert(0,"All")
 
         responses[1].insert(0,"")
         unique_type = sorted(set(responses[1]))
@@ -80,10 +83,16 @@ class UI:
         responses[2].insert(0,"")
         unique_region = sorted(set(responses[2]))
 
-        return unique_years,unique_type,unique_region
+        responses[3].insert(0,"")
+        unique_customer = sorted(set(responses[3]))
+
+        return unique_years,unique_type,unique_region,unique_customer
     
     def manage_files(self,new_files):
         return 'Pass'
+    
+    def hide_welcome(self):
+        return gr.update(visible=False),gr.update(visible=False),gr.update(visible=True)
     
     def get_chat_placeholder(self):
         return self.settings.chat_placeholder

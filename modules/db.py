@@ -28,9 +28,11 @@ class DataBase:
         logger.info('Connected to DB')
         return self._pool.acquire()
     
-    def _build_query(self,cols=['t.id','t.metadata.file_name'],year=2010,type='',region='',customer='',product='') -> str:
+    def _build_query(self,cols=['t.id','t.metadata.file_name'],year=None,type='',region='',customer='',product='') -> str:
         search = ','.join(cols)
-        query = rf"""SELECT {search} FROM WL_Calls t WHERE json_query(metadata, '$.report_date.date()?(@ > "{str(year)}-01-01T00:00")') IS NOT NULL"""
+        query = rf"""SELECT {search} FROM WL_Calls t WHERE json_query(metadata, '$.report_date.date()?(@ > "2000-01-01T00:00")') IS NOT NULL"""
+        if year:
+            query = query + rf""" AND json_query(metadata, '$.report_date.date()?(@ > "{str(year)}-01-01T00:00")') IS NOT NULL AND json_query(metadata, '$.report_date.date()?(@ < "{str(year+1)}-01-01T00:00")') IS NOT NULL"""
         if type:
             query = query + rf""" AND json_query(metadata, '$?(@.type == "{str(type)}")') IS NOT NULL"""
         if region:
@@ -75,7 +77,7 @@ class DataBase:
     def get_db_response(
             self,
             name_list,
-            year:int=2010,
+            year:int=None,
             type:str=None,
             region:str=None,
             customer:str=None,
